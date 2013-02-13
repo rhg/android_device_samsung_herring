@@ -809,7 +809,7 @@ typedef enum OMX_VIDEO_AVCLEVELTYPE {
  *
  * OMX_VIDEO_AVCLoopFilterEnable               : Enable
  * OMX_VIDEO_AVCLoopFilterDisable              : Disable
- * OMX_VIDEO_AVCLoopFilterDisableSliceBoundary : Disabled on slice boundaries
+ * OMX_VIDEO_AVCLoopFilterDisableSliceBoundary : Disabled on slice boun
  */
 typedef enum OMX_VIDEO_AVCLOOPFILTERTYPE {
     OMX_VIDEO_AVCLoopFilterEnable = 0,

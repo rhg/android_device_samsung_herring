@@ -115,6 +115,24 @@ BOARD_USES_BML_OVER_MTD := true
 BOARD_CUSTOM_BOOTIMG_MK := device/samsung/galaxys4gmtd/shbootimg.mk
 BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/galaxys4gmtd/recovery/graphics.c
 
+# SkTextBox for libtvout
+BOARD_USES_SKTEXTBOX := true
+
+# Hardware rendering
+USE_OPENGL_RENDERER := true
+
+# TARGET_DISABLE_TRIPLE_BUFFERING can be used to disable triple buffering
+# on per target basis. On crespo it is possible to do so in theory
+# to save memory, however, there are currently some limitations in the
+# OpenGL ES driver that in conjunction with disable triple-buffering
+# would hurt performance significantly (see b/6016711)
+TARGET_DISABLE_TRIPLE_BUFFERING := false
+
+BOARD_ALLOW_EGL_HIBERNATION := true
+
+# hwcomposer: custom vsync ioctl
+BOARD_CUSTOM_VSYNC_IOCTL := true
+
 # Suspend in charger to disable capacitive keys
 BOARD_ALLOW_SUSPEND_IN_CHARGER := true
 
