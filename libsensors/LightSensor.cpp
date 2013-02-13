@@ -25,19 +25,37 @@
 
 #include "LightSensor.h"
 
-/*****************************************************************************/
+/* From AOSP Crespo */
+   // Convert adc value to lux assuming:
+   // I = 10 * log(Ev) uA
+   // R = 47kOhm
+   // Max adc value 4095 = 3.3V
+   // 1/4 of light reaches sensor
+   // mPendingEvent.light 
+   //     = powf(10, event->value * (330.0f / 4095.0f / 47.0f)) * 4.0f;
 
-/* The Crespo ADC sends 4 somewhat bogus events after enabling the sensor.
-   This becomes a problem if the phone is turned off in bright light
-   and turned back on in the dark.
-   To avoid this we ignore the first 4 events received after enabling the sensor.
+/* jmk -- "Ev" isn't right, as it is already a logarithmic measure
+ * Assume that the author meant "lux" and the component values are correct
+ * The expression given absorbs the gain of 10 into 3300 mv / 10 = 330.0f
+ *
+ * Measurement suggests that a factor of 8.75 (instead of 4)
+ * provides better agreement with what the example SGS4G was reporting,
+ * typically matching within 1/3-stop except at very low light levels
+ * 
+ * lux = 8.75 * 10^(ADC_counts*3300/10/4095/47)
+ * 
+ * Express this in equivalent form e^(coef_a*ADC_counts + coef_b)
+ * coef_a = ln(10)*3300/10/4095/47
+ * coef_b = ln(8.75)
  */
-#define FIRST_GOOD_EVENT    5
+
+#define COEF_A 0.003948f
+#define COEF_B 2.169f
+
 
 LightSensor::LightSensor()
     : SensorBase(NULL, "light_sensor"),
       mEnabled(0),
-      mEventsSinceEnable(0),
       mInputReader(4),
       mHasPendingEvent(false)
 {
@@ -79,7 +97,6 @@ int LightSensor::setDelay(int32_t handle, int64_t ns)
 int LightSensor::enable(int32_t handle, int en)
 {
     int flags = en ? 1 : 0;
-    mEventsSinceEnable = 0;
     mPreviousLight = -1;
     if (flags != mEnabled) {
         int fd;
@@ -131,50 +148,22 @@ int LightSensor::readEvents(sensors_event_t* data, int count)
         int type = event->type;
         if (type == EV_ABS) {
             if (event->code == EVENT_TYPE_LIGHT) {
-                mPendingEvent.light = indexToValue(event->value);
-                if (mEventsSinceEnable < FIRST_GOOD_EVENT)
-                    mEventsSinceEnable++;
+	        mPendingEvent.light = exp(COEF_A*event->value + COEF_B);
             }
         } else if (type == EV_SYN) {
             mPendingEvent.timestamp = timevalToNano(event->time);
-            if (mEnabled && (mPendingEvent.light != mPreviousLight) &&
-                    mEventsSinceEnable >= FIRST_GOOD_EVENT) {
+            if (mEnabled && (mPendingEvent.light != mPreviousLight)) {
                 *data++ = mPendingEvent;
                 count--;
                 numEventReceived++;
                 mPreviousLight = mPendingEvent.light;
             }
         } else {
-            LOGE("LightSensor: unknown event (type=%d, code=%d)",
+            ALOGE("LightSensor: unknown event (type=%d, code=%d)",
                     type, event->code);
         }
         mInputReader.next();
     }
 
     return numEventReceived;
-}
-
-float LightSensor::indexToValue(size_t index) const
-{
-    /* Driver gives a rolling average adc value.  We convert it lux levels. */
-    static const struct adcToLux {
-        size_t adc_value;
-        float  lux_value;
-    } adcToLux[] = {
-        {  150,   10.0 },  /* from    0 -  150 adc, we map to    10.0 lux */
-        {  800,  160.0 },  /* from  151 -  800 adc, we map to   160.0 lux */
-        {  900,  225.0 },  /* from  801 -  900 adc, we map to   225.0 lux */
-        { 1000,  320.0 },  /* from  901 - 1000 adc, we map to   320.0 lux */
-        { 1200,  640.0 },  /* from 1001 - 1200 adc, we map to   640.0 lux */
-        { 1400, 1280.0 },  /* from 1201 - 1400 adc, we map to  1280.0 lux */
-        { 1600, 2600.0 },  /* from 1401 - 1600 adc, we map to  2600.0 lux */
-        { 4095, 10240.0 }, /* from 1601 - 4095 adc, we map to 10240.0 lux */
-    };
-    size_t i;
-    for (i = 0; i < ARRAY_SIZE(adcToLux); i++) {
-        if (index < adcToLux[i].adc_value) {
-            return adcToLux[i].lux_value;
-        }
-    }
-    return adcToLux[ARRAY_SIZE(adcToLux)-1].lux_value;
 }

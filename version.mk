@@ -1,7 +1,6 @@
-TA_RELEASE := 4
+TA_RELEASE := 7
 
 PRODUCT_PROPERTY_OVERRIDES += \
-	ro.goo.developerid=TeamAcid \
-	ro.goo.rom=CM9-galaxys4gmtd \
-	ro.goo.version=$(TA_RELEASE) \
-	ro.goo.board=$(PRODUCT_DEVICE)
+	ro.goo.developerid=TFQ \
+	ro.goo.rom=Slim-galaxys4gmtd \
+	ro.goo.version=$(TA_RELEASE)

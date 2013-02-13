@@ -1,7 +1,6 @@
 /*
  * Copyright 2008, The Android Open Source Project
  * Copyright 2010, Samsung Electronics Co. LTD
- * Copyright 2011, The CyanogenMod Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -477,7 +476,7 @@ static int fimc_v4l2_s_ext_ctrl(int fp, unsigned int id, void *value)
     int ret;
 
     ctrl.id = id;
-    ctrl.reserved = value;
+    ctrl.string = (char *) value;
 
     ctrls.ctrl_class = V4L2_CTRL_CLASS_CAMERA;
     ctrls.count = 1;
@@ -1481,6 +1480,7 @@ int SecCamera::getSnapshotAndJpeg(unsigned char *yuv_buf, unsigned char *jpeg_bu
 
     ret = fimc_v4l2_enum_fmt(m_cam_fd,m_snapshot_v4lformat);
     CHECK(ret);
+    // FFC: Swap width and height
     ret = fimc_v4l2_s_fmt_cap(m_cam_fd, m_snapshot_width, m_snapshot_height, m_snapshot_v4lformat);
     CHECK(ret);
     ret = fimc_v4l2_reqbufs(m_cam_fd, V4L2_BUF_TYPE_VIDEO_CAPTURE, nframe);

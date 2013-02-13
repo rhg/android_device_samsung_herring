@@ -4,13 +4,14 @@ $(call inherit-product, vendor/cm/config/gsm.mk)
 # Release name
 PRODUCT_RELEASE_NAME := GalaxyS4G
 
-TARGET_BOOTANIMATION_NAME := vertical-480x800
-
-# Inherit some common CM stuff.
+# Inherit some common cm stuff.
 $(call inherit-product, vendor/cm/config/common_full_phone.mk)
 
 # Inherit device configuration
 $(call inherit-product, device/samsung/galaxys4gmtd/full_galaxys4gmtd.mk)
+
+PRODUCT_PROPERTY_OVERRIDES += \
+	ro.camera.res=5MP
 
 ## Device identifier. This must come after all inclusions
 PRODUCT_DEVICE := galaxys4gmtd

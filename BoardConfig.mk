@@ -42,8 +42,9 @@ TARGET_BOOTLOADER_BOARD_NAME := herring
 TARGET_BOARD_PLATFORM_GPU := POWERVR_SGX540_120
 TARGET_RECOVERY_INITRC := device/samsung/galaxys4gmtd/recovery.rc
 
-TARGET_RELEASETOOL_OTA_FROM_TARGET_SCRIPT := device/samsung/galaxys4gmtd/releasetools/galaxys4gmtd_ota_from_target_files
-TARGET_RELEASETOOL_IMG_FROM_TARGET_SCRIPT := device/samsung/galaxys4gmtd/releasetools/galaxys4gmtd_img_from_target_files
+# Releasetools
+TARGET_RELEASETOOL_OTA_FROM_TARGET_SCRIPT := ./device/samsung/galaxys4gmtd/releasetools/galaxys4gmtd_ota_from_target_files
+TARGET_RELEASETOOL_IMG_FROM_TARGET_SCRIPT := ./device/samsung/galaxys4gmtd/releasetools/galaxys4gmtd_img_from_target_files
 
 TARGET_PROVIDES_LIBAUDIO := true
 
@@ -54,6 +55,13 @@ BOARD_EGL_CFG := device/samsung/galaxys4gmtd/prebuilt/etc/egl.cfg
 USE_OPENGL_RENDERER := true
 BOARD_USE_SKIA_LCDTEXT := true
 ENABLE_WEBGL := true
+BOARD_ALLOW_EGL_HIBERNATION := true
+
+# Camera
+USE_CAMERA_STUB := false
+ifeq ($(USE_CAMERA_STUB),false)
+BOARD_CAMERA_LIBRARIES := libcamera
+endif
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
@@ -107,12 +115,15 @@ BOARD_USES_BML_OVER_MTD := true
 BOARD_CUSTOM_BOOTIMG_MK := device/samsung/galaxys4gmtd/shbootimg.mk
 BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/galaxys4gmtd/recovery/graphics.c
 
+# Suspend in charger to disable capacitive keys
+BOARD_ALLOW_SUSPEND_IN_CHARGER := true
+
 # Charging mode
 BOARD_CHARGING_MODE_BOOTING_LPM := /sys/class/power_supply/battery/charging_mode_booting
 BOARD_BATTERY_DEVICE_NAME := "battery"
 BOARD_CHARGER_RES := device/samsung/galaxys4gmtd/res/charger
 
-TARGET_OTA_ASSERT_DEVICE := herring,galaxys4g,galaxys4gmtd,SGH-T959V
+TARGET_OTA_ASSERT_DEVICE := herring,galaxys4g,galaxys4gmtd,SGH-T959V,SGH-T959W
 
 # TWRP options
 DEVICE_RESOLUTION := 480x800

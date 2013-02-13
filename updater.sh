@@ -61,6 +61,7 @@ if /tmp/busybox test -e /dev/block/bml7 ; then
 
         # Make sure that the zip file gets flashed upon reboot
         /tmp/busybox echo "install_zip(\"$PACKAGE_LOCATION\");" > /sdcard/extendedcommand
+        /tmp/busybox echo "install $PACKAGE_LOCATION" > /sdcard/openrecoveryscript
     fi
 
     # Scorch any ROM Manager settings to require the user to reflash recovery
@@ -134,6 +135,8 @@ elif /tmp/busybox test -e /dev/block/mtdblock0 ; then
 
     # remove the cyanogenmod.cfg to prevent this from looping
     /tmp/busybox rm -f /sdcard/cyanogenmod.cfg
+    /tmp/busybox rm -f /sdcard/extendedcommand
+    /tmp/busybox rm -f /sdcard/openrecoveryscript
 
     # unmount and format cache
     /tmp/busybox umount -l /cache
@@ -145,13 +148,6 @@ elif /tmp/busybox test -e /dev/block/mtdblock0 ; then
 
     # restore efs backup
     if /tmp/busybox test -e /sdcard/backup/efs.tar ; then
-        /tmp/busybox umount -l /efs
-        /tmp/erase_image efs
-        /tmp/busybox mkdir -p /efs
-
-        # make sure we can mount /efs
-        check_mount /efs /dev/block/mtdblock4 yaffs2
-
         # verify the md5sum of efs.tar before restore
         cd /sdcard/backup/
         /tmp/busybox md5sum -c efs.tar.md5
@@ -162,6 +158,14 @@ elif /tmp/busybox test -e /dev/block/mtdblock0 ; then
             echo "efs.tar could not be verified."
             exit 7
         fi
+
+        # efs.tar's hash has been verified, continue
+        /tmp/busybox umount -l /efs
+        /tmp/erase_image efs
+        /tmp/busybox mkdir -p /efs
+
+        # make sure we can mount /efs
+        check_mount /efs /dev/block/mtdblock4 yaffs2
 
         # extract the tar file in the /efs partition
         cd /efs

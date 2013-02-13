@@ -328,7 +328,10 @@ on boot
     chown bluetooth bluetooth /sys/class/rfkill/rfkill2/type
     chown bluetooth bluetooth /sys/class/rfkill/rfkill3/type
 
-    # allow system to modify cpufreq control files
+    #symlinks for samsung RIL
+    symlink /radio/modem.bin /dev/block/bml12
+
+# allow system to modify cpufreq control files
     chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
     chmod 0664 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
     chown root system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq

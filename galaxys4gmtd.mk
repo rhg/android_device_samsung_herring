@@ -93,27 +93,32 @@ PRODUCT_PACKAGES += \
 # These are the OpenMAX IL configuration files
 PRODUCT_COPY_FILES += \
     device/samsung/galaxys4gmtd/sec_mm/sec_omx/sec_omx_core/secomxregistry:system/etc/secomxregistry \
-    device/samsung/galaxys4gmtd/media_profiles.xml:system/etc/media_profiles.xml
+    device/samsung/galaxys4gmtd/media_profiles.xml:system/etc/media_profiles.xml \
+    device/samsung/galaxys4gmtd/media_codecs.xml:system/etc/media_codecs.xml
 
 # These are the OpenMAX IL modules
 PRODUCT_PACKAGES += \
-    libSEC_OMX_Core.s5pc110 \
-    libOMX.SEC.AVC.Decoder.s5pc110 \
-    libOMX.SEC.M4V.Decoder.s5pc110 \
-    libOMX.SEC.M4V.Encoder.s5pc110 \
-    libOMX.SEC.AVC.Encoder.s5pc110
+	libSEC_OMX_Core.aries \
+	libOMX.SEC.AVC.Decoder.aries \
+	libOMX.SEC.M4V.Decoder.aries \
+	libOMX.SEC.M4V.Encoder.aries \
+	libOMX.SEC.AVC.Encoder.aries
 
 # audio
 PRODUCT_PACKAGES += \
-    audio.primary.s5pc110 \
-    audio_policy.s5pc110
+    audio.primary.herring \
+    audio_policy.herring
 
 # Misc other modules
 PRODUCT_PACKAGES += \
     lights.s5pc110 \
     sensors.s5pc110 \
-    audio.a2dp.default
+    audio.a2dp.default \
+    audio.a2dp.default \
+    audio.usb.default
 
+PRODUCT_COPY_FILES += \
+	device/samsung/galaxys4gmtd/libaudio/audio_policy.conf:system/etc/audio_policy.conf
 # Libs
 PRODUCT_PACKAGES += \
     camera.s5pc110 \
