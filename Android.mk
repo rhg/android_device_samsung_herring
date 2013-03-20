@@ -14,7 +14,7 @@
 
 LOCAL_PATH := $(call my-dir)
 
-ifeq ($(TARGET_DEVICE),galaxys4gmtd)
+ifeq ($(TARGET_DEVICE),herring)
 
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := s3c-keypad.kcm
